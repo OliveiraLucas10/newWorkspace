@@ -21,7 +21,9 @@ public class Main
 
 		// ReadingUserInputChallenge.challenge();
 
-		MinAndMaxChallenge.challenge();
+		// MinAndMaxChallenge.challenge();
+
+		Exercise27.inputThenPrintSumAndAverage();
 	}
 
 }
