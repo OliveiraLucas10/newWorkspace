@@ -19,7 +19,9 @@ public class Main
 
 		// ReadingUserInput.scann();
 
-		ReadingUserInputChallenge.challenge();
+		// ReadingUserInputChallenge.challenge();
+
+		MinAndMaxChallenge.challenge();
 	}
 
 }
