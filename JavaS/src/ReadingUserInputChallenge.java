@@ -9,7 +9,7 @@ public class ReadingUserInputChallenge
 		int counter = 0;
 		int sum = 0;
 
-		while (true)
+		while (counter < 10)
 		{
 			System.out.println("Enter number #" + (counter + 1) + ":");
 
@@ -19,10 +19,6 @@ public class ReadingUserInputChallenge
 				int number = scanner.nextInt();
 				counter++;
 				sum += number;
-				if (counter == 10)
-				{
-					break;
-				}
 			}
 			else
 			{
