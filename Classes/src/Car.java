@@ -15,7 +15,7 @@ public class Car
 	public Car(int doors, int wheels, String model, String engine, String colour)
 	{
 		super();
-		this.doors = 4;
+		this.doors = doors;
 		this.wheels = wheels;
 		this.model = model;
 		this.engine = engine;
