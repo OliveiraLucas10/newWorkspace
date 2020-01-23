@@ -17,7 +17,9 @@ public class Main
 		// System.out.println(Exercise24.canPack(5, 3, 24));
 		// System.out.println(Exercise24.canPack(4, 18, 19));
 
-		ReadingUserInput.scann();
+		// ReadingUserInput.scann();
+
+		ReadingUserInputChallenge.challenge();
 	}
 
 }
