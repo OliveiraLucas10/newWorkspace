@@ -27,10 +27,47 @@ public class GroceryList
 		System.out.println("Grocery item " + (position + 1) + " has been modified");
 	}
 
+	public void modifyGroceryItem(String newItem)
+	{
+		int position = groceryList.indexOf(newItem);
+		if (position > -1)
+		{
+			this.modifyGroceryItem(position, newItem);
+		}
+		else
+		{
+			System.out.println("This item couldn't to be find.");
+		}
+	}
+
+	public void removeGroceryItem(String item)
+	{
+		int position = groceryList.indexOf(item);
+		if (position > -1)
+		{
+			this.removeGroceryItem(position);
+		}
+		else
+		{
+			System.out.println("This item couldn't to be find.");
+		}
+	}
+
 	public void removeGroceryItem(int position)
 	{
 		String theItem = groceryList.get(position);
 		groceryList.remove(position);
 		System.out.println(theItem + " was removed.");
+	}
+
+	public String findItem(String searchItem)
+	{
+		// boolean contains = groceryList.contains(searchItem);
+		int indexOf = groceryList.indexOf(searchItem);
+		if (indexOf > -1)
+			return groceryList.get(indexOf);
+
+		return null;
+
 	}
 }
