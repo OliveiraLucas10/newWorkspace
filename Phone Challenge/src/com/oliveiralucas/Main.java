@@ -20,9 +20,9 @@ public class Main
 
 		while (!quit)
 		{
-			System.out.println("\n");
-			System.out.print("Enter your choice: ");
+			System.out.print("\nEnter your choice: ");
 			choice = scanner.nextInt();
+			System.out.print("\n");
 			scanner.nextLine();
 
 			switch (choice)
@@ -37,12 +37,15 @@ public class Main
 					modifyContact();
 					break;
 				case 3:
-					// removeContact();
+					removeContact();
 					break;
 				case 4:
-					// searchContactName();
+					searchContactName();
 					break;
 				case 5:
+					mobilePhone.listContactsNames();
+					break;
+				case 6:
 					quit = true;
 					break;
 			}
@@ -58,7 +61,8 @@ public class Main
 		System.out.println("\t 2 - To modify a contact by name.");
 		System.out.println("\t 3 - To remove a contact by name.");
 		System.out.println("\t 4 - To search a contact by name.");
-		System.out.println("\t 5 - To quit the aplication.");
+		System.out.println("\t 5 - To list all contacts names.");
+		System.out.println("\t 6 - To quit the aplication.");
 
 	}
 
@@ -68,17 +72,62 @@ public class Main
 		String name = scanner.nextLine();
 		System.out.print("Please enter the number: ");
 		String number = scanner.nextLine();
-		mobilePhone.addNewContact(name, number);
+		while (!mobilePhone.addNewContact(name, number))
+		{
+			System.out.print("This name already exist in the list, please enter a new name: ");
+			name = scanner.nextLine();
+		}
 		System.out.println("Contact add successfuly");
+
 	}
 
 	private static void modifyContact()
 	{
 		System.out.print("Enter the contact to be modified: ");
 		String name = scanner.nextLine();
-		if (mobilePhone.hasContact(name))
+		int hasContact = mobilePhone.hasContact(name);
+		if (hasContact > -1)
 		{
+			System.out.print("Please enter the new name: ");
+			name = scanner.nextLine();
+			System.out.print("Please enter the new number: ");
+			String number = scanner.nextLine();
+			mobilePhone.modifyContact(name, number, hasContact);
+			System.out.println("Contact modified successfully");
+		}
+		else
+		{
+			System.out.println(name + " couldn't be found in the contact list.");
+		}
+	}
 
+	private static void removeContact()
+	{
+		System.out.print("Enter the contact to be removed: ");
+		String name = scanner.nextLine();
+		int hasContact = mobilePhone.hasContact(name);
+		if (hasContact > -1)
+		{
+			mobilePhone.remove(hasContact);
+			System.out.println("Contact removed successfully");
+		}
+		else
+		{
+			System.out.println(name + " couldn't be found in the contact list.");
+		}
+
+	}
+
+	private static void searchContactName()
+	{
+		System.out.print("Enter the contact name to get all information: ");
+		String name = scanner.nextLine();
+		int hasContact = mobilePhone.hasContact(name);
+		if (hasContact > -1)
+		{
+			String[] allInformation = mobilePhone.getAllInformation(hasContact);
+			System.out.println("Contact name: " + allInformation[0]);
+			System.out.println("Contact number: " + allInformation[1]);
 		}
 		else
 		{
