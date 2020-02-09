@@ -21,7 +21,6 @@ public class Capitulo2
 		}
 
 		System.out.println("\n==== NEW ====\n");
-		System.out.println("\n==== NEW ====\n");
 		Mostrador mostrador = new Mostrador();
 		usuarios.forEach(mostrador);
 
@@ -47,8 +46,11 @@ public class Capitulo2
 			@Override
 			public void accept(Usuario u)
 			{
-				System.out.println(u.getNome()); 
+				System.out.println(u.getNome());
 			}
 		});
+
+		System.out.println("\n==== NEW LAMBDA ====\n");
+		usuarios.forEach(u -> System.out.println(u.getNome()));
 	}
 }
