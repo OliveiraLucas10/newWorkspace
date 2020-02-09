@@ -51,6 +51,10 @@ public class Capitulo2
 		});
 
 		System.out.println("\n==== NEW LAMBDA ====\n");
-		usuarios.forEach(u -> System.out.println(u.getNome()));
+		usuarios.forEach(u -> System.out.println(u.getNome() + " isModerador = " + u.isModerador()));
+		usuarios.forEach(user -> {
+			user.tornaModerador();
+			System.out.println(user.getNome() + " isModerador = " + user.isModerador());
+		});
 	}
 }
