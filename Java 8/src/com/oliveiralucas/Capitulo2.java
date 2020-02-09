@@ -21,6 +21,7 @@ public class Capitulo2
 		}
 
 		System.out.println("\n==== NEW ====\n");
+		System.out.println("\n==== NEW ====\n");
 		Mostrador mostrador = new Mostrador();
 		usuarios.forEach(mostrador);
 
