@@ -8,7 +8,7 @@ public class TestingRemoveIf
 
 	public static void main(String... args)
 	{
-		List<Usuario> usuarios = new ArrayList<Usuario>(); // arraysList é uma colleção mutavel, aceita mudançã
+		List<Usuario> usuarios = new ArrayList<>(); // arraysList é uma colleção mutavel, aceita mudançã
 		usuarios.add(new Usuario("Lucas", 150));
 		usuarios.add(new Usuario("Pedro", 101));
 		usuarios.add(new Usuario("Maico", 50));
