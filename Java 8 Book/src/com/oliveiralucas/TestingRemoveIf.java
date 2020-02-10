@@ -30,5 +30,8 @@ public class TestingRemoveIf
 
 		Function<Usuario, String> byName = Usuario::getNome;
 		usuarios.sort(Comparator.comparing(byName));
+
+		Function<Usuario, Integer> byPontos = Usuario::getPontos;
+		usuarios.sort(Comparator.comparing(byPontos).reversed());
 	}
 }
