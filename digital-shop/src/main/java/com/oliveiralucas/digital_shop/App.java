@@ -5,6 +5,9 @@ import static java.util.Arrays.asList;
 import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -133,25 +136,126 @@ public class App {
 		 */
 		Map<Customer, List<Payment>> customerToPaymet = payments.stream()
 				.collect(Collectors.groupingBy(Payment::getCustomer));
-		
-		Map<Customer, List<List<Product>>> customerToProductsList =
-				payments.stream()
-				.collect(Collectors.groupingBy(Payment::getCustomer,
-				Collectors.mapping(Payment::getProducts, Collectors.toList())));
-				customerToProductsList.entrySet().stream()
+
+		Map<Customer, List<List<Product>>> customerToProductsList = payments
+				.stream()
+				.collect(Collectors.groupingBy(Payment::getCustomer, Collectors
+						.mapping(Payment::getProducts, Collectors.toList())));
+		customerToProductsList.entrySet().stream()
 				.sorted(Comparator.comparing(e -> e.getKey().getName()))
 				.forEach(System.out::println);
-		
-		
-		Map<Customer, List<Product>> customerToProducts2steps =
-				customerToProductsList.entrySet().stream()
+
+		Map<Customer, List<Product>> customerToProducts2steps = customerToProductsList
+				.entrySet().stream()
 				.collect(Collectors.toMap(Map.Entry::getKey,
-				e -> e.getValue().stream()
-				.flatMap(List::stream)
-				.collect(Collectors.toList())));
-				customerToProducts2steps.entrySet().stream()
+						e -> e.getValue().stream().flatMap(List::stream)
+								.collect(Collectors.toList())));
+		customerToProducts2steps.entrySet().stream()
 				.sorted(Comparator.comparing(e -> e.getKey().getName()))
 				.forEach(System.out::println);
+
+		// /* Qual é nosso cliente mais especial? */
+		// Map<Customer, BigDecimal> totalValuePerCustomer = payments.stream()
+		// .collect(Collectors.groupingBy(Payment::getCustomer,
+		// Collectors.reducing(BigDecimal.ZERO, p -> p
+		// .getProducts().stream().map(Product::getPrice)
+		// .reduce(BigDecimal.ZERO, BigDecimal::add),
+		// BigDecimal::add)));
+
+		/*
+		 * O código está no mínimo muito acumulado. Cremos já termos passado do
+		 * limite da legibilidade.Va mos quebrar essa redução, criando uma
+		 * variável temporária responsável por mapear um Payment para a soma de
+		 * todos os preços de seus produtos:
+		 */
+		Function<Payment, BigDecimal> paymentTotal = p -> p.getProducts()
+				.stream().map(Product::getPrice)
+				.reduce(BigDecimal.ZERO, BigDecimal::add);
+
+		/* Comisso, podemos utilizar essa Function no reducing: */
+		Map<Customer, BigDecimal> totalValuePerCustomer = payments.stream()
+				.collect(Collectors.groupingBy(Payment::getCustomer,
+						Collectors.reducing(BigDecimal.ZERO, paymentTotal,
+								BigDecimal::add)));
+
+		totalValuePerCustomer.entrySet().stream()
+				.sorted(Comparator.comparing(Map.Entry::getValue))
+				.forEach(System.out::println);
+
+		/* Relatórios com datas */
+
+		System.out.println("=== Relatórios com datas ===");
+		Map<YearMonth, List<Payment>> paymentsPerMonth = payments.stream()
+				.collect(Collectors
+						.groupingBy(p -> YearMonth.from(p.getDate())));
+		paymentsPerMonth.entrySet().stream().forEach(System.out::println);
+
+		/*
+		 * E se quisermos saber, também por mês, quanto foi faturado na loja?
+		 * Basta agrupar com o mesmo critério e usar a redução que conhecemos:
+		 * somando todos os preços de todos os produtos de todos pagamentos.
+		 */
+
+		Map<YearMonth, BigDecimal> paymentsValuePerMonth = payments.stream()
+				.collect(Collectors.groupingBy(p -> YearMonth.from(p.getDate()),
+						Collectors.reducing(BigDecimal.ZERO, p -> p
+								.getProducts().stream().map(Product::getPrice)
+								.reduce(BigDecimal.ZERO, BigDecimal::add),
+								BigDecimal::add)));
+
+		paymentsValuePerMonth.entrySet().stream()
+				.sorted(Comparator.comparing(Map.Entry::getValue))
+				.forEach(System.out::println);
+
+		/* trabalhando com as assinaturas */
+
+		System.out.println("=== ASSINATURAS ===");
+		BigDecimal monthlyFee = new BigDecimal("99.90");
+		Subscription s1 = new Subscription(monthlyFee, yesterday.minusMonths(5),
+				paulo);
+		Subscription s2 = new Subscription(monthlyFee, yesterday.minusMonths(8),
+				today.minusMonths(1), rodrigo);
+		Subscription s3 = new Subscription(monthlyFee, yesterday.minusMonths(5),
+				today.minusMonths(2), adriano);
+		List<Subscription> subscriptions = Arrays.asList(s1, s2, s3);
+
+		/*
+		 * Como calcular quantos meses foram pagos através daquela assinatura?
+		 * Basta usar o que conhecemos da API de java.time. Mas depende do caso.
+		 * Se a assinatura ainda estiver ativa, calculamos o intervalo de tempo
+		 * entre begin e a data de hoje:
+		 */
+
+		long meses = ChronoUnit.MONTHS.between(s1.getBegin(),
+				LocalDateTime.now());
+
+		System.out.println(meses);
+
+		/*
+		 * E se a assinatura terminou? Em vez de enchermos nosso código com ifs,
+		 * tiramos proveito do Optional:
+		 */
+
+		long meses2 = ChronoUnit.MONTHS.between(s1.getBegin(),
+				s1.getEnd().orElse(LocalDateTime.now()));
+		System.out.println(meses2);
+
+		/*
+		 * Para calcular o valor gerado por aquela assinatura, bastamultiplicar
+		 * esse número de meses pelo custo mensal:
+		 */
+		BigDecimal total2 = s1.getMonthlyFee().multiply(
+				new BigDecimal(ChronoUnit.MONTHS.between(s1.getBegin(),
+						s1.getEnd().orElse(LocalDateTime.now()))));
+		System.out.println(total2);
+
+		/*
+		 * Dada uma lista de subscriptions, fica fácil somar todo o total pago:
+		 */
+		BigDecimal totalPaid = subscriptions.stream()
+				.map(Subscription::getTotalPaid)
+				.reduce(BigDecimal.ZERO, BigDecimal::add);
+		System.out.println(totalPaid);
 
 	}
 }
